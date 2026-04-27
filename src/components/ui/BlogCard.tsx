@@ -2,7 +2,8 @@ import Link from "next/link";
 import { Clock, Calendar } from "lucide-react";
 
 interface BlogCardProps {
-  id: string | number;
+  id?: string | number;
+  slug: string;
   title: string;
   excerpt: string;
   imageUrl: string;
@@ -11,10 +12,10 @@ interface BlogCardProps {
   category: string;
 }
 
-export default function BlogCard({ id, title, excerpt, imageUrl, date, readTime, category }: BlogCardProps) {
+export default function BlogCard({ slug, title, excerpt, imageUrl, date, readTime, category }: BlogCardProps) {
   return (
     <article className="group bg-white dark:bg-slate-900 rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-2xl transform group-hover:-translate-y-2 transition-all duration-500 ring-1 ring-slate-900/5 hover:ring-brand-500/20">
-      <Link href={`/blog/${id}`} className="block relative h-60 overflow-hidden">
+      <Link href={`/blog/${slug}`} className="block relative h-60 overflow-hidden">
         <div 
           className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-105"
           style={{ backgroundImage: `url('${imageUrl}')` }}
@@ -38,7 +39,7 @@ export default function BlogCard({ id, title, excerpt, imageUrl, date, readTime,
           </span>
         </div>
         
-        <Link href={`/blog/${id}`}>
+        <Link href={`/blog/${slug}`}>
           <h3 className="font-serif text-xl font-bold text-slate-900 dark:text-white mb-3 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors line-clamp-2">
             {title}
           </h3>

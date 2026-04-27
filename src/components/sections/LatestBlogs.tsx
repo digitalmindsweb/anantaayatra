@@ -1,35 +1,7 @@
 import BlogCard from "../ui/BlogCard";
 import Link from "next/link";
 
-const DUMMY_BLOGS = [
-  {
-    id: 1,
-    title: "10 Hidden Gems in Southeast Asia You Must Visit",
-    excerpt: "Escape the tourist traps and discover untouched beaches, ancient ruins, and authentic culinary experiences across Southeast Asia.",
-    imageUrl: "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=2039&auto=format&fit=crop",
-    date: "Oct 12, 2026",
-    readTime: "5 min read",
-    category: "Adventure"
-  },
-  {
-    id: 2,
-    title: "The Ultimate Guide to Sustainable Travel",
-    excerpt: "Learn how to minimize your carbon footprint while maximizing your cultural exchange during your global adventures.",
-    imageUrl: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2070&auto=format&fit=crop",
-    date: "Oct 08, 2026",
-    readTime: "8 min read",
-    category: "Eco Travel"
-  },
-  {
-    id: 3,
-    title: "A Week in the Swiss Alps: Itinerary",
-    excerpt: "From breathtaking train rides to cozy chalets, here is how you can spend an unforgettable week in the Swiss mountains.",
-    imageUrl: "https://images.unsplash.com/photo-1531366936337-778c64cddc2d?q=80&w=1968&auto=format&fit=crop",
-    date: "Sep 28, 2026",
-    readTime: "12 min read",
-    category: "Itinerary"
-  }
-];
+import { DUMMY_BLOGS } from "@/data/blogs";
 
 export default function LatestBlogs() {
   return (
@@ -44,7 +16,7 @@ export default function LatestBlogs() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {DUMMY_BLOGS.map((blog) => (
+          {DUMMY_BLOGS.slice(0, 3).map((blog) => (
             <BlogCard key={blog.id} {...blog} />
           ))}
         </div>

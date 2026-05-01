@@ -1,7 +1,7 @@
-import BlogCard from "../ui/BlogCard";
+import ContentCard from "../ui/ContentCard";
 import Link from "next/link";
 
-import { DUMMY_BLOGS } from "@/data/blogs";
+import { CONTENT_DATA } from "@/data/content";
 
 export default function LatestBlogs() {
   return (
@@ -16,8 +16,8 @@ export default function LatestBlogs() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {DUMMY_BLOGS.slice(0, 3).map((blog) => (
-            <BlogCard key={blog.id} {...blog} />
+          {CONTENT_DATA.filter(c => c.type === 'blog').slice(0, 3).map((blog) => (
+            <ContentCard key={blog.id} item={blog} />
           ))}
         </div>
 

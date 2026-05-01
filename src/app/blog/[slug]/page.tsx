@@ -1,7 +1,7 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { DUMMY_BLOGS } from "@/data/blogs";
-import { Calendar, Clock, ArrowLeft } from "lucide-react";
+import { CONTENT_DATA, BlogContent } from "@/data/content";
+import { Calendar, Clock, ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -11,9 +11,18 @@ interface BlogPostProps {
   params: Promise<{ slug: string }>;
 }
 
+export async function generateStaticParams() {
+  return CONTENT_DATA
+    .filter(item => item.type === 'blog') // optional filter
+    .map(item => ({
+      slug: item.slug,
+    }));
+}
+
 export async function generateMetadata({ params }: BlogPostProps): Promise<Metadata> {
   const { slug } = await params;
-  const blog = DUMMY_BLOGS.find((b) => b.slug === slug);
+  const blogContentArray = CONTENT_DATA.filter(c => c.type === 'blog') as BlogContent[];
+  const blog = blogContentArray.find((b) => b.slug === slug);
 
   if (!blog) {
     return {
@@ -49,7 +58,12 @@ export async function generateMetadata({ params }: BlogPostProps): Promise<Metad
 
 export default async function BlogPost({ params }: BlogPostProps) {
   const { slug } = await params;
-  const blog = DUMMY_BLOGS.find((b) => b.slug === slug);
+  const blogContentArray = CONTENT_DATA.filter(c => c.type === 'blog') as BlogContent[];
+  const currentIndex = blogContentArray.findIndex((b) => b.slug === slug);
+  const blog = blogContentArray[currentIndex];
+  
+  const prevBlog = currentIndex < blogContentArray.length - 1 ? blogContentArray[currentIndex + 1] : null;
+  const nextBlog = currentIndex > 0 ? blogContentArray[currentIndex - 1] : null;
 
   if (!blog) {
     redirect("/blog");
@@ -89,20 +103,48 @@ export default async function BlogPost({ params }: BlogPostProps) {
              <p className="text-2xl leading-relaxed text-slate-700 dark:text-slate-300 font-serif mb-10 italic border-l-4 border-brand-500 pl-6">
                "{blog.excerpt}"
              </p>
-             <div className="text-lg leading-loose text-slate-800 dark:text-slate-200">
-                <p>{blog.content}</p>
-                <p className="mt-6">As you venture forth, remember that the journey is just as important as the destination. Embrace the unexpected, connect with locals, and leave only footprints behind.</p>
+             <div 
+                className="prose prose-brand prose-lg dark:prose-invert max-w-none text-slate-800 dark:text-slate-200" 
+                dangerouslySetInnerHTML={{ __html: blog.content }} 
+             />
+             <div className="text-lg leading-loose text-slate-800 dark:text-slate-200 mt-6">
+                <p>As you venture forth, remember that the journey is just as important as the destination. Embrace the unexpected, connect with locals, and leave only footprints behind.</p>
              </div>
           </div>
           
           <div className="max-w-3xl mx-auto border-t border-slate-200 dark:border-slate-800 pt-10 mt-16 pb-8">
-            <Link 
-              href="/blog" 
-              className="inline-flex items-center justify-center px-6 py-3 bg-brand-50 hover:bg-brand-100 text-brand-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 font-semibold rounded-full transition-colors group"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2 transition-transform group-hover:-translate-x-1" />
-              Back to Travel Journal
-            </Link>
+            <div className="flex flex-col sm:flex-row justify-between items-stretch gap-6 mb-12">
+              {prevBlog ? (
+                <Link href={`/blog/${prevBlog.slug}`} className="group flex-1 flex flex-col w-full text-left bg-slate-50 hover:bg-slate-100 dark:bg-slate-800/30 dark:hover:bg-slate-800 p-6 rounded-2xl transition-colors border border-transparent dark:border-slate-700">
+                  <span className="text-sm text-brand-600 dark:text-brand-400 mb-2 font-semibold flex items-center">
+                    <ArrowLeft className="h-4 w-4 mr-2 transition-transform group-hover:-translate-x-1" /> Previous Article
+                  </span>
+                  <span className="font-serif font-bold text-lg text-slate-900 dark:text-white line-clamp-2">{prevBlog.title}</span>
+                </Link>
+              ) : (
+                <div className="flex-1 hidden sm:block"></div>
+              )}
+
+              {nextBlog ? (
+                <Link href={`/blog/${nextBlog.slug}`} className="group flex-1 flex flex-col w-full sm:text-right bg-slate-50 hover:bg-slate-100 dark:bg-slate-800/30 dark:hover:bg-slate-800 p-6 rounded-2xl transition-colors border border-transparent dark:border-slate-700 sm:items-end">
+                  <span className="text-sm text-brand-600 dark:text-brand-400 mb-2 font-semibold flex items-center">
+                    Next Article <ArrowRight className="h-4 w-4 ml-2 transition-transform group-hover:translate-x-1" />
+                  </span>
+                  <span className="font-serif font-bold text-lg text-slate-900 dark:text-white line-clamp-2">{nextBlog.title}</span>
+                </Link>
+              ) : (
+                <div className="flex-1 hidden sm:block"></div>
+              )}
+            </div>
+
+            <div className="flex justify-center">
+              <Link 
+                href="/blog" 
+                className="inline-flex items-center justify-center px-8 py-3 bg-brand-50 hover:bg-brand-100 text-brand-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 font-semibold rounded-full transition-colors group"
+              >
+                View all articles
+              </Link>
+            </div>
           </div>
         </article>
       </main>

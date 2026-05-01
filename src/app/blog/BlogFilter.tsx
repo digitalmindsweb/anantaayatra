@@ -1,0 +1,86 @@
+'use client';
+
+import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import ContentCard from "@/components/ui/ContentCard";
+import { CONTENT_DATA, ContentType } from "@/data/content";
+import { Suspense } from 'react';
+
+// Safe type guard to validate ContentType without casting
+const isValidType = (type: string | null): type is ContentType => {
+  return type === 'place' || type === 'itinerary' || type === 'blog';
+};
+
+function FilterContent() {
+  const searchParams = useSearchParams();
+  const typeParam = searchParams.get('type');
+  
+  const currentFilter = isValidType(typeParam) ? typeParam : 'all';
+
+  const filteredContent = currentFilter === 'all' 
+    ? CONTENT_DATA 
+    : CONTENT_DATA.filter(c => c.type === currentFilter);
+
+  const tabs = [
+    { label: 'All Content', value: 'all' },
+    { label: 'Places to Visit', value: 'place' },
+    { label: 'Itineraries', value: 'itinerary' },
+    { label: 'Travel Blogs', value: 'blog' },
+  ];
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="text-center mb-16">
+        <h1 className="text-5xl md:text-7xl font-serif font-black text-slate-900 dark:text-white mb-6 tracking-tight">Travel Hub</h1>
+        <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto font-light leading-relaxed">
+          Explore our curated destinations, step-by-step itineraries, and inspiring travel stories.
+        </p>
+      </div>
+      
+      {/* Filter Tabs */}
+      <div className="flex flex-wrap justify-center gap-3 mb-16">
+        {tabs.map((tab) => {
+          const isActive = currentFilter === tab.value;
+          const href = tab.value === 'all' ? '/blog' : `/blog?type=${tab.value}`;
+          return (
+            <Link 
+              key={tab.value}
+              href={href}
+              className={`px-6 py-3 rounded-full text-sm font-bold tracking-wide transition-all ${
+                isActive 
+                  ? 'bg-brand-600 text-white shadow-lg scale-105' 
+                  : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800'
+              }`}
+            >
+              {tab.label}
+            </Link>
+          );
+        })}
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {filteredContent.map((item) => (
+          <ContentCard key={item.id} item={item} headingLevel="h2" />
+        ))}
+      </div>
+      
+      {filteredContent.length === 0 && (
+         <div className="text-center text-slate-500 py-20 text-lg">
+            No content found for this category.
+         </div>
+      )}
+    </div>
+  );
+}
+
+export default function BlogFilter() {
+  return (
+    <Suspense fallback={
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[50vh] flex items-center justify-center">
+        <div className="text-xl text-slate-500 animate-pulse">Loading content...</div>
+      </div>
+    }>
+      <FilterContent />
+    </Suspense>
+  );
+}

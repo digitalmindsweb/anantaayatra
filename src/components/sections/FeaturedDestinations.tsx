@@ -1,9 +1,12 @@
 import ContentCard from "../ui/ContentCard";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { CONTENT_DATA, PlaceContent } from "@/data/content";
+import { getPlaces } from "@/lib/places";
 
-export default function FeaturedDestinations() {
+export default async function FeaturedDestinations() {
+  const places = await getPlaces();
+  const featuredDestinations = places.slice(0, 3);
+
   return (
     <section className="py-32 bg-slate-50 dark:bg-slate-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -15,6 +18,7 @@ export default function FeaturedDestinations() {
               Handpicked locations that offer the perfect blend of adventure, culture, and relaxation.
             </p>
           </div>
+
           <Link href="/destinations" className="hidden md:flex items-center text-brand-600 hover:text-brand-700 dark:text-brand-500 dark:hover:text-brand-400 font-semibold group mt-6 md:mt-0">
             View all destinations
             <ArrowRight className="h-5 w-5 ml-2 transition-transform group-hover:translate-x-1" />
@@ -22,7 +26,7 @@ export default function FeaturedDestinations() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {CONTENT_DATA.filter(c => c.type === 'place').slice(0, 3).map((dest) => (
+          {featuredDestinations.map((dest) => (
             <ContentCard key={dest.id} item={dest} headingLevel="h3" />
           ))}
         </div>

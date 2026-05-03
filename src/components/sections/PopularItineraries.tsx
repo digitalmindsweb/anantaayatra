@@ -1,11 +1,12 @@
 import ContentCard from "../ui/ContentCard";
 import Link from "next/link";
-import { CONTENT_DATA } from "@/data/content";
 import { ArrowRight } from "lucide-react";
+import { getItineraries, mapItineraryToContent } from "@/lib/itineraries";
 
-export default function PopularItineraries() {
-  const itineraries = CONTENT_DATA.filter(c => c.type === 'itinerary').slice(0, 3);
-  
+export default async function PopularItineraries() {
+  const data = await getItineraries();
+  const itineraries = data.slice(0, 3).map(mapItineraryToContent);
+
   if (itineraries.length === 0) return null;
 
   return (
@@ -19,6 +20,7 @@ export default function PopularItineraries() {
               Step-by-step travel plans crafted by experts to maximize your adventure.
             </p>
           </div>
+
           <Link href="/itinerary" className="hidden md:flex items-center text-brand-600 hover:text-brand-700 dark:text-brand-500 dark:hover:text-brand-400 font-semibold group mt-6 md:mt-0">
             View all itineraries
             <ArrowRight className="h-5 w-5 ml-2 transition-transform group-hover:translate-x-1" />
@@ -32,7 +34,7 @@ export default function PopularItineraries() {
         </div>
 
         <div className="mt-10 md:hidden flex justify-center">
-          <Link href="/itinerary" className="flex items-center justify-center w-full bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-white py-3 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-brand-500">
+          <Link href="/itinerary" className="flex items-center justify-center w-full bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-white py-3 rounded-xl font-medium">
             View all itineraries
           </Link>
         </div>

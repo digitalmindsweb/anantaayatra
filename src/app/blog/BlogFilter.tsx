@@ -3,7 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import ContentCard from "@/components/ui/ContentCard";
-import { CONTENT_DATA, ContentType } from "@/data/content";
+import { BlogContent, CONTENT_DATA, ContentType } from "@/data/content";
 import { Suspense } from 'react';
 
 // Safe type guard to validate ContentType without casting
@@ -11,15 +11,23 @@ const isValidType = (type: string | null): type is ContentType => {
   return type === 'place' || type === 'itinerary' || type === 'blog';
 };
 
-function FilterContent() {
+interface BlogFilterProps {
+  blogs: BlogContent[];
+}
+
+function FilterContent({ blogs }: BlogFilterProps) {
   const searchParams = useSearchParams();
   const typeParam = searchParams.get('type');
   
   const currentFilter = isValidType(typeParam) ? typeParam : 'all';
+  const contentData = [
+    ...CONTENT_DATA.filter((content) => content.type !== 'blog'),
+    ...blogs,
+  ];
 
   const filteredContent = currentFilter === 'all' 
-    ? CONTENT_DATA 
-    : CONTENT_DATA.filter(c => c.type === currentFilter);
+    ? contentData 
+    : contentData.filter(c => c.type === currentFilter);
 
   const tabs = [
     { label: 'All Content', value: 'all' },
@@ -73,14 +81,14 @@ function FilterContent() {
   );
 }
 
-export default function BlogFilter() {
+export default function BlogFilter({ blogs }: BlogFilterProps) {
   return (
     <Suspense fallback={
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[50vh] flex items-center justify-center">
         <div className="text-xl text-slate-500 animate-pulse">Loading content...</div>
       </div>
     }>
-      <FilterContent />
+      <FilterContent blogs={blogs} />
     </Suspense>
   );
 }

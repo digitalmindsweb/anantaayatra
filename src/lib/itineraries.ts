@@ -1,5 +1,5 @@
 import { supabase } from "./supabase"
-import type { AnyContent } from "@/data/content"
+import type { ItineraryContent } from "@/data/content"
 
 // 🔹 Raw DB type
 interface ItineraryRow {
@@ -68,7 +68,7 @@ export async function getItineraryBySlug(slug: string) {
 }
 
 // 🔹 Mapping → UI format
-export function mapItineraryToContent(item: ItineraryRow): AnyContent {
+export function mapItineraryToContent(item: ItineraryRow): ItineraryContent {
     return {
         id: item.id,
         type: "itinerary",

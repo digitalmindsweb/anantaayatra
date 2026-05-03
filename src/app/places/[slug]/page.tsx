@@ -34,14 +34,14 @@ export async function generateMetadata({ params }: PlaceProps): Promise<Metadata
 export default async function PlacePage({ params }: PlaceProps) {
   const { slug } = await params;
 
+  const place = await getPlaceBySlug(slug);
+  if (!place) redirect("/places");
+
   const places = await getPlaces();
   const currentIndex = places.findIndex((p) => p.slug === slug);
-  const place = places[currentIndex];
 
   const prevPlace = currentIndex < places.length - 1 ? places[currentIndex + 1] : null;
   const nextPlace = currentIndex > 0 ? places[currentIndex - 1] : null;
-
-  if (!place) redirect("/places");
 
   return (
     <>

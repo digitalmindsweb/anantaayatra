@@ -3,8 +3,8 @@
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import ContentCard from "@/components/ui/ContentCard";
-import { BlogContent, CONTENT_DATA, ContentType } from "@/data/content";
-import { Suspense } from 'react';
+import { AnyContent, BlogContent, ContentType, ItineraryContent, PlaceContent } from "@/data/content";
+import { Suspense, useEffect, useMemo, useState } from 'react';
 
 // Safe type guard to validate ContentType without casting
 const isValidType = (type: string | null): type is ContentType => {
@@ -13,21 +13,44 @@ const isValidType = (type: string | null): type is ContentType => {
 
 interface BlogFilterProps {
   blogs: BlogContent[];
+  places: PlaceContent[];
+  itineraries: ItineraryContent[];
 }
 
-function FilterContent({ blogs }: BlogFilterProps) {
+function FilterContent({ blogs, places, itineraries }: BlogFilterProps) {
   const searchParams = useSearchParams();
-  const typeParam = searchParams.get('type');
+  const [currentFilter, setCurrentFilter] = useState<ContentType>('all');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [tagFilter, setTagFilter] = useState('all');
   
-  const currentFilter = isValidType(typeParam) ? typeParam : 'all';
-  const contentData = [
-    ...CONTENT_DATA.filter((content) => content.type !== 'blog'),
-    ...blogs,
-  ];
+  useEffect(() => {
+    const typeParam = searchParams.get('type');
+    const categoryParam = searchParams.get('category');
+    const tagParam = searchParams.get('tag');
 
-  const filteredContent = currentFilter === 'all' 
-    ? contentData 
-    : contentData.filter(c => c.type === currentFilter);
+    setCurrentFilter(isValidType(typeParam) ? typeParam : 'all');
+    setCategoryFilter(categoryParam || 'all');
+    setTagFilter(tagParam || 'all');
+  }, [searchParams]);
+
+  const contentData = useMemo<AnyContent[]>(
+    () => [...places, ...itineraries, ...blogs],
+    [blogs, itineraries, places]
+  );
+
+  const filteredContent = useMemo(() => {
+    return contentData.filter((content) => {
+      const matchesType = currentFilter === 'all' || content.type === currentFilter;
+      const matchesCategory =
+        categoryFilter === 'all' ||
+        content.category.toLowerCase() === categoryFilter.toLowerCase();
+      const matchesTag =
+        tagFilter === 'all' ||
+        content.tags.some((tag) => tag.toLowerCase() === tagFilter.toLowerCase());
+
+      return matchesType && matchesCategory && matchesTag;
+    });
+  }, [categoryFilter, contentData, currentFilter, tagFilter]);
 
   const tabs = [
     { label: 'All Content', value: 'all' },
@@ -54,6 +77,7 @@ function FilterContent({ blogs }: BlogFilterProps) {
             <Link 
               key={tab.value}
               href={href}
+              onClick={() => setCurrentFilter(tab.value as ContentType)}
               className={`px-6 py-3 rounded-full text-sm font-bold tracking-wide transition-all ${
                 isActive 
                   ? 'bg-brand-600 text-white shadow-lg scale-105' 
@@ -81,14 +105,14 @@ function FilterContent({ blogs }: BlogFilterProps) {
   );
 }
 
-export default function BlogFilter({ blogs }: BlogFilterProps) {
+export default function BlogFilter({ blogs, places, itineraries }: BlogFilterProps) {
   return (
     <Suspense fallback={
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[50vh] flex items-center justify-center">
         <div className="text-xl text-slate-500 animate-pulse">Loading content...</div>
       </div>
     }>
-      <FilterContent blogs={blogs} />
+      <FilterContent blogs={blogs} places={places} itineraries={itineraries} />
     </Suspense>
   );
 }

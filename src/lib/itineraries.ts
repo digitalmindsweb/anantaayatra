@@ -63,38 +63,27 @@ export async function getItineraryBySlug(slug: string): Promise<Itinerary | null
         return null
     }
 
-    // 🔹 3. Get itinerary_places (NO day_number)
+    // 🔹 3. Get places (grouped by day_number, matching actual schema)
     const { data: itineraryPlaces, error: placesError } = await supabase
         .from("itinerary_places")
-        .select("*")
+        .select("id, day_number, place_name, place_slug, description")
         .eq("itinerary_id", itinerary.id)
 
     if (placesError) {
         console.error("❌ itinerary_places error:", placesError)
-        // DONT return null so page can still load without places
+        // continue — page renders without places rather than 404
     }
 
-    // 🔹 4. Get places
-    const placeIds = itineraryPlaces?.map((p: any) => p.place_id || p.places_id || p.id) || []
-
-    const { data: placesData, error: placesFetchError } = await supabase
-        .from("places")
-        .select("id, name, slug")
-        .in("id", placeIds)
-
-    if (placesFetchError) {
-        console.error("❌ places fetch error:", placesFetchError)
-    }
-
-    // 🔹 5. Group (TEMP: all places under each day)
+    // 🔹 4. Attach places to their day by day_number
     const days: ItineraryDay[] =
         daysData?.map((day) => {
-            const places =
-                itineraryPlaces
-                    ?.map((p) =>
-                        placesData?.find((pl) => pl.id === p.place_id)
-                    )
-                    .filter(Boolean) || []
+            const places = (itineraryPlaces ?? [])
+                .filter((p: any) => p.day_number === day.day_number)
+                .map((p: any) => ({
+                    id: p.id,
+                    name: p.place_name,   // map place_name → name for UI
+                    slug: p.place_slug ?? "",
+                }))
 
             return {
                 id: day.id,

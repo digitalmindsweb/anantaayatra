@@ -1,0 +1,19 @@
+[marketplaces.openai-bundled]
+last_updated = "2026-05-03T07:48:08Z"
+source_type = "local"
+source = '\\?\C:\Users\DELL\.codex\.tmp\bundled-marketplaces\openai-bundled'
+
+[windows]
+sandbox = "elevated"
+
+[projects.'f:\digitalminds\anantaayatra\node_project\projects\anantaayatra']
+trust_level = "trusted"
+
+[plugins."browser-use@openai-bundled"]
+enabled = true
+
+[mcp]
+remote_mcp_client_enabled = true
+
+[mcp_servers.supabase]
+url = "https://mcp.supabase.com/mcp?project_ref=hnciwwpujjhsgphekayx"

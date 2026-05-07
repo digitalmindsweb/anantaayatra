@@ -6,6 +6,7 @@ interface PlaceRow {
     slug: string;
     name: string;
     description?: string | null;
+    excerpt?: string | null;       // new admin field
     image_url?: string | null;
     country?: string | null;
     state?: string | null;
@@ -14,28 +15,32 @@ interface PlaceRow {
     content?: string | null;
     best_time_to_visit?: string | null;
     highlights?: string[] | null;
+    status?: string | null;
 }
 
-// 🔹 INTERNAL mapping (NOT exported)
+// 🔹 INTERNAL mapping
 function mapPlace(place: PlaceRow): PlaceContent {
     return {
         id: place.id,
         slug: place.slug,
 
-        // UI required fields
+        // name → title for UI
         title: place.name,
-        excerpt: place.description || "No description available",
-        content: place.content || "",
+
+        // Use admin excerpt first, fall back to description, then empty string
+        // Never return "No description available" — let the UI handle empty state
+        excerpt: place.excerpt || place.description || "",
+
+        // Use content first, fall back to description
+        content: place.content || place.description || "",
 
         imageUrl: place.image_url || "",
         tags: place.tags || [],
 
-        // IMPORTANT for routing
         type: "place",
         category: "Destination",
 
-        // Optional fields UI expects
-        date: "", // or you can format created_at
+        date: "",
         readTime: "",
         location: place.state || place.country || "",
         bestTimeToVisit: place.best_time_to_visit || "",
@@ -43,11 +48,13 @@ function mapPlace(place: PlaceRow): PlaceContent {
     };
 }
 
-// ✅ Get all places
+// ✅ Get published places only — for public listing and homepage
 export async function getPlaces(): Promise<PlaceContent[]> {
     const { data, error } = await supabase
         .from("places")
-        .select("*");
+        .select("*")
+        .eq("status", "published")
+        .order("created_at", { ascending: false });
 
     if (error) {
         console.error("Error fetching places:", error.message);
@@ -57,12 +64,14 @@ export async function getPlaces(): Promise<PlaceContent[]> {
     return data.map(mapPlace);
 }
 
+// ✅ Get a single place by slug — published only for public pages
 export async function getPlaceBySlug(slug: string): Promise<PlaceContent | null> {
     const { data, error } = await supabase
         .from("places")
         .select("*")
         .eq("slug", slug)
-        .maybeSingle(); // ✅ IMPORTANT
+        .eq("status", "published")
+        .maybeSingle();
 
     if (error) return null;
     if (!data) return null;

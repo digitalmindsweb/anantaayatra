@@ -1,90 +1,130 @@
 import { supabase } from "./supabase"
-import type { ItineraryContent } from "@/data/content"
 
-// 🔹 Raw DB type
-interface ItineraryRow {
+export interface ItineraryDay {
     id: string
-    slug: string
+    day_number: number
     title: string
-    description?: string
-    content?: string
-    image_url?: string
-    duration?: string
-    location?: string
-    category?: string
-    read_time?: string
-    published_at?: string
-    tags?: string[]
-    place_id?: string
-    day_wise_plan?: any
+    description: string
+    places: {
+        id: string
+        name: string
+        slug: string
+    }[]
 }
 
-// 🔹 Fetch all itineraries
+export interface Itinerary {
+    id: string
+    title: string
+    slug: string
+    description?: string
+    image_url?: string
+    days: ItineraryDay[]
+}
+
+// ✅ Get all itineraries (list page)
 export async function getItineraries() {
     const { data, error } = await supabase
         .from("itineraries")
         .select("*")
-        .eq("status", "published")
-        .order("published_at", { ascending: false })
+        .order("created_at", { ascending: false })
 
     if (error) {
-        console.error("Error fetching itineraries:", error.message)
+        console.error("Error fetching itineraries:", error)
         return []
     }
 
-    return data
+    return data || []
 }
 
-// 🔹 Fetch by place
-export async function getItinerariesByPlace(placeId: string) {
-    const { data, error } = await supabase
+export async function getItineraryBySlug(slug: string): Promise<Itinerary | null> {
+    // 🔹 1. Get itinerary
+    const { data: itinerary, error: itineraryError } = await supabase
         .from("itineraries")
-        .select("*")
-        .eq("place_id", placeId)
-        .eq("status", "published")
-
-    if (error) {
-        console.error("Error fetching itineraries:", error.message)
-        return []
-    }
-
-    return data
-}
-
-// 🔹 Fetch single
-export async function getItineraryBySlug(slug: string) {
-    const { data, error } = await supabase
-        .from("itineraries")
-        .select("*")
+        .select("id, title, slug, description, image_url")
         .eq("slug", slug)
         .maybeSingle()
 
-    if (error) {
-        console.error("Error:", error.message)
+    if (itineraryError) {
+        console.error("❌ itinerary error:", itineraryError)
         return null
     }
 
-    return data
+    if (!itinerary) return null
+
+    // 🔹 2. Get days
+    const { data: daysData, error: daysError } = await supabase
+        .from("itinerary_days")
+        .select("id, day_number, title, description")
+        .eq("itinerary_id", itinerary.id)
+        .order("day_number", { ascending: true })
+
+    if (daysError) {
+        console.error("❌ days error:", daysError)
+        return null
+    }
+
+    // 🔹 3. Get itinerary_places (NO day_number)
+    const { data: itineraryPlaces, error: placesError } = await supabase
+        .from("itinerary_places")
+        .select("*")
+        .eq("itinerary_id", itinerary.id)
+
+    if (placesError) {
+        console.error("❌ itinerary_places error:", placesError)
+        // DONT return null so page can still load without places
+    }
+
+    // 🔹 4. Get places
+    const placeIds = itineraryPlaces?.map((p: any) => p.place_id || p.places_id || p.id) || []
+
+    const { data: placesData, error: placesFetchError } = await supabase
+        .from("places")
+        .select("id, name, slug")
+        .in("id", placeIds)
+
+    if (placesFetchError) {
+        console.error("❌ places fetch error:", placesFetchError)
+    }
+
+    // 🔹 5. Group (TEMP: all places under each day)
+    const days: ItineraryDay[] =
+        daysData?.map((day) => {
+            const places =
+                itineraryPlaces
+                    ?.map((p) =>
+                        placesData?.find((pl) => pl.id === p.place_id)
+                    )
+                    .filter(Boolean) || []
+
+            return {
+                id: day.id,
+                day_number: day.day_number,
+                title: day.title,
+                description: day.description,
+                places,
+            }
+        }) || []
+
+    return {
+        ...itinerary,
+        days,
+    } as Itinerary
 }
 
-// 🔹 Mapping → UI format
-export function mapItineraryToContent(item: ItineraryRow): ItineraryContent {
+// ✅ Mapping for UI
+export function mapItineraryToContent(itinerary: any) {
     return {
-        id: item.id,
+        id: itinerary.id,
         type: "itinerary",
-        slug: item.slug,
-        title: item.title,
-        excerpt: item.description || "",
-        content: item.content || "",
-        imageUrl: item.image_url || "",
-        date: item.published_at
-            ? new Date(item.published_at).toDateString()
-            : "",
-        readTime: item.read_time || "",
-        category: item.category || "Travel",
-        tags: item.tags || [],
-        location: item.location || "",
-        duration: item.duration || "",
-        dayWisePlan: item.day_wise_plan || []
+        slug: itinerary.slug,
+        title: itinerary.title,
+        excerpt: itinerary.description || "",
+        content: itinerary.description || "",
+        imageUrl: itinerary.image_url || "",
+        date: "",
+        readTime: "",
+        category: "",
+        tags: [],
+        author: "",
     }
 }

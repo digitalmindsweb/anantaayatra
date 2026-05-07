@@ -11,7 +11,8 @@ export const metadata: Metadata = {
 
 export default async function ItineraryList() {
   const data = await getItineraries();
-  const itineraries = data.map(mapItineraryToContent);
+
+  const itineraries = (data || []).map(mapItineraryToContent); // ✅ safe
 
   return (
     <>

@@ -16,16 +16,32 @@ export async function generateMetadata({ params }: PlaceProps): Promise<Metadata
   const place = await getPlaceBySlug(slug);
 
   if (!place) {
-    return { title: "Place Not Found | Anantaayatra" };
+    return { title: "Destination Not Found | Anantaayatra" };
   }
 
+  const title = `Visit ${place.title} - Travel Guide & Top Attractions`;
+  const description = place.excerpt || `Plan your perfect trip to ${place.title}. Discover the best time to visit, top attractions, and local secrets in our comprehensive travel guide.`;
+  const url = `/places/${slug}`;
+
   return {
-    title: `${place.title} | Anantaayatra`,
-    description: place.excerpt,
+    title,
+    description,
+    alternates: {
+      canonical: url,
+    },
     openGraph: {
-      title: place.title,
-      description: place.excerpt,
-      images: [{ url: place.imageUrl }],
+      title,
+      description,
+      url,
+      images: place.imageUrl ? [{ url: place.imageUrl, alt: `${place.title} travel destination` }] : [],
+      type: "website",
+      siteName: "Anantaayatra",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: place.imageUrl ? [place.imageUrl] : [],
     },
   };
 }

@@ -4,9 +4,47 @@ import { getBlogBySlug, getPublishedBlogs, mapBlogToContent } from "@/lib/blogs"
 import { Calendar, Clock, ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Metadata } from "next";
 
 interface BlogPageProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({ params }: BlogPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const blogData = await getBlogBySlug(slug);
+
+  if (!blogData) {
+    return { title: "Blog Not Found | Anantaayatra" };
+  }
+
+  const blog = mapBlogToContent(blogData);
+  const title = blog.title;
+  const description = blog.excerpt || `Read about ${blog.title} on Anantaayatra.`;
+  const url = `/blog/${slug}`;
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      title,
+      description,
+      url,
+      images: blog.imageUrl ? [{ url: blog.imageUrl }] : [],
+      type: "article",
+      publishedTime: blog.date || undefined,
+      authors: blog.author ? [blog.author] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: blog.imageUrl ? [blog.imageUrl] : [],
+    },
+  };
 }
 
 export default async function BlogPage({ params }: BlogPageProps) {

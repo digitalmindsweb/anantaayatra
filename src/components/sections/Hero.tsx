@@ -37,9 +37,10 @@ export default function Hero() {
           </Link>
           <Link
             href="/blog"
-            className="w-full sm:w-auto bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 text-white px-8 py-4 rounded-full font-medium transition-all hover:scale-105 flex items-center justify-center"
+            className="w-full sm:w-auto bg-black/30 hover:bg-black/40 backdrop-blur-md border border-white/30 text-white px-8 py-4 rounded-full font-medium transition-all duration-300 hover:scale-105 flex items-center justify-center shadow-lg"
           >
             Read Travel Guides
+            <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
       </div>

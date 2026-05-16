@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Clock, Calendar, MapPin } from "lucide-react";
+import { Clock, Calendar, MapPin, Sun, Clock3 } from "lucide-react";
 import { AnyContent } from "@/data/content";
 
 interface ContentCardProps {
@@ -24,7 +24,7 @@ export default function ContentCard({ item, headingLevel = 'h3' }: ContentCardPr
   return (
     <article className="group bg-white dark:bg-slate-900 rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-2xl transform group-hover:-translate-y-2 transition-all duration-500 ring-1 ring-slate-900/5 hover:ring-brand-500/20 flex flex-col h-full">
       <Link href={href} className="block relative h-60 overflow-hidden shrink-0">
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-105"
           style={{ backgroundImage: `url('${item.imageUrl}')` }}
         />
@@ -39,31 +39,52 @@ export default function ContentCard({ item, headingLevel = 'h3' }: ContentCardPr
           )}
         </div>
       </Link>
-      
+
       <div className="p-6 flex flex-col flex-grow">
         <div className="flex items-center text-xs text-slate-500 dark:text-slate-400 mb-4 space-x-4 flex-wrap gap-y-2">
-          {item.location && (
+
+          {/* Places & Itineraries */}
+          {(item.type === 'place' || item.type === 'itinerary') && item.location && (
             <span className="flex items-center">
               <MapPin className="h-3.5 w-3.5 mr-1.5" />
               <span className="line-clamp-1">{item.location}</span>
             </span>
           )}
-          <span className="flex items-center">
-            <Calendar className="h-3.5 w-3.5 mr-1.5" />
-            {item.date}
-          </span>
+
+
+          {/* Places */}
+          {item.type === 'place' && item.bestTimeToVisit && (
+            <span className="flex items-center">
+              <Sun className="h-3.5 w-3.5 mr-1.5" />
+              {item.bestTimeToVisit}
+            </span>
+          )}
+
+
+          {/* Blogs */}
+          {item.type === 'blog' && item.date && (
+            <span className="flex items-center">
+              <Calendar className="h-3.5 w-3.5 mr-1.5" />
+              {new Date(item.date).toLocaleDateString('en-IN', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+              })}
+            </span>
+          )}
+
         </div>
-        
+
         <Link href={href} className="block mb-3">
           <HeadingTag className="font-serif text-xl font-bold text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors line-clamp-2">
             {item.title}
           </HeadingTag>
         </Link>
-        
+
         <p className="text-slate-600 dark:text-slate-400 text-sm line-clamp-3 mb-6 flex-grow">
           {item.excerpt}
         </p>
-        
+
         <div className="flex flex-wrap gap-2 mt-auto">
           {item.tags.slice(0, 3).map(tag => (
             <span key={tag} className="text-[10px] font-semibold tracking-wider uppercase text-slate-500 bg-slate-100 dark:bg-slate-800 dark:text-slate-400 px-2.5 py-1 rounded-md">

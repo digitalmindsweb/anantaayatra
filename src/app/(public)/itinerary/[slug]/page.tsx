@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: ItineraryProps): Promise<Meta
 export default async function ItineraryPage({ params }: ItineraryProps) {
   const { slug } = await params;
   const itinerary = await getItineraryBySlug(slug);
-  
+
   // Fetch all itineraries to get the previous and next links
   const allItineraries = await getItineraries();
   const currentIndex = allItineraries.findIndex((p) => p.slug === slug);
@@ -60,7 +60,12 @@ export default async function ItineraryPage({ params }: ItineraryProps) {
 
   // Fallbacks for missing data
   const imageUrl = itinerary.image_url || 'https://images.unsplash.com/photo-1531366936337-778c64cddc2d?q=80&w=1968&auto=format&fit=crop';
-  const duration = itinerary.days && itinerary.days.length > 0 ? `${itinerary.days.length} Days` : 'Multi-Day Trip';
+  const duration =
+    itinerary.days && itinerary.days.length > 0
+      ? `${itinerary.days.length - 1} ${itinerary.days.length - 1 === 1 ? 'Night' : 'Nights'
+      } / ${itinerary.days.length} ${itinerary.days.length === 1 ? 'Day' : 'Days'
+      }`
+      : 'Multi-Day Trip';
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -98,7 +103,7 @@ export default async function ItineraryPage({ params }: ItineraryProps) {
             <h1 className="text-4xl md:text-6xl font-serif font-black text-slate-900 dark:text-white leading-tight mb-8 tracking-tight">
               {itinerary.title}
             </h1>
-            
+
             <div className="flex items-center justify-center flex-wrap gap-4 text-sm font-medium text-slate-500 dark:text-slate-400">
               <span className="flex items-center bg-slate-50 dark:bg-slate-800 px-3 py-1.5 rounded-full">
                 <Clock className="h-4 w-4 mr-2 text-brand-500" />
@@ -107,57 +112,57 @@ export default async function ItineraryPage({ params }: ItineraryProps) {
             </div>
           </div>
 
-          <div 
+          <div
             className="w-full h-[400px] md:h-[600px] rounded-3xl bg-cover bg-center mb-16 shadow-2xl transition-transform duration-1000 hover:scale-[1.01]"
             style={{ backgroundImage: `url('${imageUrl}')` }}
           />
 
           <div className="max-w-3xl mx-auto">
-             {itinerary.description && (
-               <p className="text-2xl leading-relaxed text-slate-700 dark:text-slate-300 font-serif mb-12 italic border-l-4 border-brand-500 pl-6">
-                 "{itinerary.description}"
-               </p>
-             )}
+            {itinerary.description && (
+              <p className="text-2xl leading-relaxed text-slate-700 dark:text-slate-300 font-serif mb-12 italic border-l-4 border-brand-500 pl-6">
+                "{itinerary.description}"
+              </p>
+            )}
 
-             {/* Day Wise Plan / Timeline */}
-             {itinerary.days && itinerary.days.length > 0 && (
-               <div className="mb-12">
-                 <div className="flex items-center mb-10">
-                   <Route className="h-8 w-8 text-brand-500 mr-4" />
-                   <h2 className="text-3xl font-serif font-bold text-slate-900 dark:text-white">Day-by-Day Itinerary</h2>
-                 </div>
-                 
-                 <div className="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 dark:before:via-slate-700 before:to-transparent">
-                   {itinerary.days.map((dayPlan, index) => (
-                     <div key={dayPlan.id || index} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                       
-                       <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white dark:border-slate-900 bg-brand-500 text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 relative z-10 font-bold text-sm">
-                         {dayPlan.day_number}
-                       </div>
-                       
-                       <div className="w-[calc(100%-3rem)] md:w-[calc(50%-2.5rem)] bg-slate-50 hover:bg-white dark:bg-slate-800/80 dark:hover:bg-slate-800 p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 dark:border-slate-700/50">
-                         <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-2">Day {dayPlan.day_number}: {dayPlan.title}</h3>
-                         <p className="text-slate-600 dark:text-slate-300 leading-relaxed">{dayPlan.description}</p>
-                         
-                         {dayPlan.places && dayPlan.places.length > 0 && (
-                           <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-                             <h4 className="text-sm font-semibold text-slate-900 dark:text-white mb-2">Places to visit:</h4>
-                             <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1">
-                               {dayPlan.places.map((place) => (
-                                 <li key={place.id}>{place.name}</li>
-                               ))}
-                             </ul>
-                           </div>
-                         )}
-                       </div>
+            {/* Day Wise Plan / Timeline */}
+            {itinerary.days && itinerary.days.length > 0 && (
+              <div className="mb-12">
+                <div className="flex items-center mb-10">
+                  <Route className="h-8 w-8 text-brand-500 mr-4" />
+                  <h2 className="text-3xl font-serif font-bold text-slate-900 dark:text-white">Day-by-Day Itinerary</h2>
+                </div>
 
-                     </div>
-                   ))}
-                 </div>
-               </div>
-             )}
+                <div className="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 dark:before:via-slate-700 before:to-transparent">
+                  {itinerary.days.map((dayPlan, index) => (
+                    <div key={dayPlan.id || index} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+
+                      <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white dark:border-slate-900 bg-brand-500 text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 relative z-10 font-bold text-sm">
+                        {dayPlan.day_number}
+                      </div>
+
+                      <div className="w-[calc(100%-3rem)] md:w-[calc(50%-2.5rem)] bg-slate-50 hover:bg-white dark:bg-slate-800/80 dark:hover:bg-slate-800 p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 dark:border-slate-700/50">
+                        <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-2">Day {dayPlan.day_number}: {dayPlan.title}</h3>
+                        <p className="text-slate-600 dark:text-slate-300 leading-relaxed">{dayPlan.description}</p>
+
+                        {dayPlan.places && dayPlan.places.length > 0 && (
+                          <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                            <h4 className="text-sm font-semibold text-slate-900 dark:text-white mb-2">Places to visit:</h4>
+                            <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1">
+                              {dayPlan.places.map((place) => (
+                                <li key={place.id}>{place.name}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-          
+
           {/* Navigation */}
           <div className="max-w-3xl mx-auto border-t border-slate-200 dark:border-slate-800 pt-10 mt-16 pb-8">
             <div className="flex flex-col sm:flex-row justify-between items-stretch gap-6 mb-12">
@@ -182,7 +187,7 @@ export default async function ItineraryPage({ params }: ItineraryProps) {
                 <div className="flex-1 hidden sm:block"></div>
               )}
             </div>
-            
+
             <div className="flex justify-center flex-wrap gap-4">
               <Link href="/itinerary" className="inline-flex items-center justify-center px-8 py-3 bg-brand-50 hover:bg-brand-100 text-brand-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 font-semibold rounded-full transition-colors">
                 View all itineraries

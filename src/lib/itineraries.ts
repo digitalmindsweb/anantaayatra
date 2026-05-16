@@ -21,13 +21,19 @@ export interface Itinerary {
     meta_title?: string
     meta_description?: string
     days: ItineraryDay[]
+    location?: string
 }
 
 // ✅ Get all itineraries (list page)
 export async function getItineraries() {
     const { data, error } = await supabase
         .from("itineraries")
-        .select("*")
+        .select(`
+            *,
+            itinerary_days (
+                id
+            )
+        `)
         .order("created_at", { ascending: false })
 
     if (error) {
@@ -104,6 +110,14 @@ export async function getItineraryBySlug(slug: string): Promise<Itinerary | null
 
 // ✅ Mapping for UI
 export function mapItineraryToContent(itinerary: any) {
+
+    const totalDays = itinerary.itinerary_days?.length || 0
+
+    const duration =
+        totalDays > 0
+            ? `${totalDays - 1} ${totalDays - 1 === 1 ? 'Night' : 'Nights'} / ${totalDays} ${totalDays === 1 ? 'Day' : 'Days'}`
+            : ""
+
     return {
         id: itinerary.id,
         type: "itinerary",
@@ -112,6 +126,11 @@ export function mapItineraryToContent(itinerary: any) {
         excerpt: itinerary.description || "",
         content: itinerary.description || "",
         imageUrl: itinerary.image_url || "",
+
+        location: itinerary.location || "",
+
+        duration,
+
         date: "",
         readTime: "",
         category: "",

@@ -65,8 +65,25 @@ export default async function BlogPage({ params }: BlogPageProps) {
   const prevBlog = currentIndex < blogs.length - 1 ? blogs[currentIndex + 1] : null;
   const nextBlog = currentIndex > 0 ? blogs[currentIndex - 1] : null;
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: blog.title,
+    description: blog.excerpt || `Read about ${blog.title} on Anantaayatra.`,
+    image: blog.imageUrl ? [blog.imageUrl] : [],
+    datePublished: blog.date ? new Date(blog.date).toISOString() : undefined,
+    author: blog.author ? [{
+      "@type": "Person",
+      name: blog.author
+    }] : undefined,
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Navbar />
 
       <main className="flex-1 w-full pt-32 pb-32 bg-white dark:bg-slate-900 min-h-screen">

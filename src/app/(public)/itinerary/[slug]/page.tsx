@@ -62,8 +62,32 @@ export default async function ItineraryPage({ params }: ItineraryProps) {
   const imageUrl = itinerary.image_url || 'https://images.unsplash.com/photo-1531366936337-778c64cddc2d?q=80&w=1968&auto=format&fit=crop';
   const duration = itinerary.days && itinerary.days.length > 0 ? `${itinerary.days.length} Days` : 'Multi-Day Trip';
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Trip",
+    name: `${duration} ${itinerary.title} Itinerary`,
+    description: itinerary.description || `Plan your perfect ${duration} trip with our detailed ${itinerary.title} itinerary.`,
+    image: imageUrl ? [imageUrl] : [],
+    itinerary: {
+      "@type": "ItemList",
+      itemListElement: itinerary.days?.map((day, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        item: {
+          "@type": "TouristTrip",
+          name: `Day ${day.day_number}: ${day.title}`,
+          description: day.description
+        }
+      })) || []
+    }
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Navbar />
       <main className="flex-1 w-full pt-32 pb-32 bg-white dark:bg-slate-900 min-h-screen">
         <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">

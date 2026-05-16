@@ -59,8 +59,20 @@ export default async function PlacePage({ params }: PlaceProps) {
   const prevPlace = currentIndex < places.length - 1 ? places[currentIndex + 1] : null;
   const nextPlace = currentIndex > 0 ? places[currentIndex - 1] : null;
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "TouristDestination",
+    name: place.title,
+    description: place.excerpt || `Plan your perfect trip to ${place.title}.`,
+    image: place.imageUrl ? [place.imageUrl] : [],
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Navbar />
       <main className="flex-1 w-full pt-32 pb-32 bg-white dark:bg-slate-900 min-h-screen">
         <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">

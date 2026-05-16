@@ -5,6 +5,7 @@ import { MapPin, Sun, CheckCircle, ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
+import DOMPurify from "isomorphic-dompurify";
 
 interface PlaceProps {
   params: Promise<{ slug: string }>;
@@ -19,8 +20,8 @@ export async function generateMetadata({ params }: PlaceProps): Promise<Metadata
     return { title: "Destination Not Found | Anantaayatra" };
   }
 
-  const title = `Visit ${place.title} - Travel Guide & Top Attractions`;
-  const description = place.excerpt || `Plan your perfect trip to ${place.title}. Discover the best time to visit, top attractions, and local secrets in our comprehensive travel guide.`;
+  const title = place.seoTitle || `Visit ${place.title} - Travel Guide & Top Attractions`;
+  const description = place.seoDescription || place.excerpt || `Plan your perfect trip to ${place.title}. Discover the best time to visit, top attractions, and local secrets in our comprehensive travel guide.`;
   const url = `/places/${slug}`;
 
   return {
@@ -137,7 +138,7 @@ export default async function PlacePage({ params }: PlaceProps) {
             {place.content && (
               <div
                 className="prose prose-brand prose-lg dark:prose-invert max-w-none"
-                dangerouslySetInnerHTML={{ __html: place.content }}
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(place.content) }}
               />
             )}
           </div>

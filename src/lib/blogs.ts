@@ -14,6 +14,8 @@ export interface Blog {
   tags: string[]
   author?: string
   place_id?: string
+  meta_title?: string
+  meta_description?: string
 }
 
 // ✅ Common select
@@ -29,7 +31,7 @@ const BLOG_SELECT = `
   author,
   read_time_int,
   published_at,
-  place_id
+  place_id, meta_title, meta_description
 `
 
 // ✅ Get all blogs
@@ -144,5 +146,7 @@ export function mapBlogToContent(blog: Blog): BlogContent {
     category: blog.category || "",
     tags: blog.tags || [],
     author: blog.author || "",
+    seoTitle: blog.meta_title || "",
+    seoDescription: blog.meta_description || "",
   };
 }

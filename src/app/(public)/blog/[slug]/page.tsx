@@ -5,6 +5,7 @@ import { Calendar, Clock, ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
+import DOMPurify from "isomorphic-dompurify";
 
 interface BlogPageProps {
   params: Promise<{ slug: string }>;
@@ -19,8 +20,8 @@ export async function generateMetadata({ params }: BlogPageProps): Promise<Metad
   }
 
   const blog = mapBlogToContent(blogData);
-  const title = blog.title;
-  const description = blog.excerpt || `Read about ${blog.title} on Anantaayatra.`;
+  const title = blog.seoTitle || blog.title;
+  const description = blog.seoDescription || blog.excerpt || `Read about ${blog.title} on Anantaayatra.`;
   const url = `/blog/${slug}`;
 
   return {
@@ -127,7 +128,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
             {blog.content && (
               <div
                 className="prose prose-brand prose-lg dark:prose-invert max-w-none"
-                dangerouslySetInnerHTML={{ __html: blog.content }}
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(blog.content) }}
               />
             )}
           </div>

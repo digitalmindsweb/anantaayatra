@@ -16,6 +16,8 @@ interface PlaceRow {
     best_time_to_visit?: string | null;
     highlights?: string[] | null;
     status?: string | null;
+    meta_title?: string | null;
+    meta_description?: string | null;
 }
 
 // 🔹 INTERNAL mapping
@@ -45,6 +47,8 @@ function mapPlace(place: PlaceRow): PlaceContent {
         location: place.state || place.country || "",
         bestTimeToVisit: place.best_time_to_visit || "",
         highlights: place.highlights || [],
+        seoTitle: place.meta_title || "",
+        seoDescription: place.meta_description || "",
     };
 }
 

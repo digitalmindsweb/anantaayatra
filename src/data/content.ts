@@ -14,6 +14,8 @@ export interface BaseContent {
   tags: string[];
   location?: string;
   author?: string; // Optional but heavily used for blogs
+  seoTitle?: string;
+  seoDescription?: string;
 }
 
 export interface PlaceContent extends BaseContent {

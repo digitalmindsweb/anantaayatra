@@ -19,8 +19,8 @@ export async function generateMetadata({ params }: ItineraryProps): Promise<Meta
   }
 
   const duration = itinerary.days && itinerary.days.length > 0 ? `${itinerary.days.length} Days` : 'Multi-Day';
-  const title = `${duration} ${itinerary.title} Itinerary & Trip Planner`;
-  const description = itinerary.description || `Plan your perfect ${duration} trip with our detailed ${itinerary.title} itinerary. Includes daily schedules, must-visit places, and expert travel tips.`;
+  const title = itinerary.meta_title || `${duration} ${itinerary.title} Itinerary & Trip Planner`;
+  const description = itinerary.meta_description || itinerary.description || `Plan your perfect ${duration} trip with our detailed ${itinerary.title} itinerary. Includes daily schedules, must-visit places, and expert travel tips.`;
   const url = `/itinerary/${slug}`;
 
   return {

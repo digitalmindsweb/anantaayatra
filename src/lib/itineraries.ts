@@ -18,6 +18,8 @@ export interface Itinerary {
     slug: string
     description?: string
     image_url?: string
+    meta_title?: string
+    meta_description?: string
     days: ItineraryDay[]
 }
 
@@ -40,7 +42,7 @@ export async function getItineraryBySlug(slug: string): Promise<Itinerary | null
     // 🔹 1. Get itinerary
     const { data: itinerary, error: itineraryError } = await supabase
         .from("itineraries")
-        .select("id, title, slug, description, image_url")
+        .select("id, title, slug, description, image_url, meta_title, meta_description")
         .eq("slug", slug)
         .maybeSingle()
 

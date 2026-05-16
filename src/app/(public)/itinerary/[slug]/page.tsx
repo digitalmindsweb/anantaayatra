@@ -18,14 +18,30 @@ export async function generateMetadata({ params }: ItineraryProps): Promise<Meta
     return { title: 'Itinerary Not Found | Anantaayatra' };
   }
 
+  const duration = itinerary.days && itinerary.days.length > 0 ? `${itinerary.days.length} Days` : 'Multi-Day';
+  const title = `${duration} ${itinerary.title} Itinerary & Trip Planner`;
+  const description = itinerary.description || `Plan your perfect ${duration} trip with our detailed ${itinerary.title} itinerary. Includes daily schedules, must-visit places, and expert travel tips.`;
+  const url = `/itinerary/${slug}`;
+
   return {
-    title: `${itinerary.title} | Anantaayatra`,
-    description: itinerary.description,
+    title,
+    description,
+    alternates: {
+      canonical: url,
+    },
     openGraph: {
-      title: itinerary.title,
-      description: itinerary.description || "",
-      type: 'article',
-      images: itinerary.image_url ? [ { url: itinerary.image_url, width: 1200, height: 630, alt: itinerary.title } ] : [],
+      title,
+      description,
+      url,
+      images: itinerary.image_url ? [{ url: itinerary.image_url, alt: `${itinerary.title} travel itinerary` }] : [],
+      type: "article",
+      siteName: "Anantaayatra",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: itinerary.image_url ? [itinerary.image_url] : [],
     },
   };
 }

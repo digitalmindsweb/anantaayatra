@@ -13,8 +13,34 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Anantaayatra | Travel Blog",
-  description: "Discover the world's most breathtaking destinations.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://anantaayatra.com"),
+  title: {
+    default: "Anantaayatra | Discover the World",
+    template: "%s | Anantaayatra",
+  },
+  description: "Discover the world's most breathtaking destinations, unique itineraries, and expert travel guides.",
+  openGraph: {
+    title: {
+      default: "Anantaayatra | Discover the World",
+      template: "%s | Anantaayatra",
+    },
+    description: "Discover the world's most breathtaking destinations, unique itineraries, and expert travel guides.",
+    url: "/",
+    siteName: "Anantaayatra",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: {
+      default: "Anantaayatra | Discover the World",
+      template: "%s | Anantaayatra",
+    },
+    description: "Discover the world's most breathtaking destinations, unique itineraries, and expert travel guides.",
+  },
+  alternates: {
+    canonical: "/",
+  },
 };
 
 export default function RootLayout({

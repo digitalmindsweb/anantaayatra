@@ -35,6 +35,7 @@ export interface Itinerary {
   location: string | null;
   meta_title: string | null;
   meta_description: string | null;
+  is_featured: boolean;
   created_by: string | null;
 }
 

@@ -28,6 +28,7 @@ export const ItinerarySchema = z.object({
   category: z.string().optional().nullable(),
   meta_title: z.string().max(60).optional().nullable(),
   meta_description: z.string().max(160).optional().nullable(),
+  is_featured: z.boolean().default(false),
   days: z.array(ItineraryDaySchema).default([]),
 });
 

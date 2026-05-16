@@ -12,7 +12,11 @@ export async function createPlaceAction(prevState: any, formData: FormData) {
     if (!user) throw new Error('Unauthorized');
 
     const rawData = Object.fromEntries(formData.entries());
-    const validatedData = PlaceSchema.parse(rawData);
+    const dataToValidate = {
+      ...rawData,
+      is_featured: rawData.is_featured === 'on',
+    };
+    const validatedData = PlaceSchema.parse(dataToValidate);
 
     const slugExists = await placeService.checkPlaceSlugExists(validatedData.slug);
     if (slugExists) return { error: 'Slug already exists. Please choose a unique slug.' };
@@ -41,7 +45,11 @@ export async function updatePlaceAction(id: string, prevState: any, formData: Fo
     if (!user) throw new Error('Unauthorized');
 
     const rawData = Object.fromEntries(formData.entries());
-    const validatedData = PlaceSchema.parse(rawData);
+    const dataToValidate = {
+      ...rawData,
+      is_featured: rawData.is_featured === 'on',
+    };
+    const validatedData = PlaceSchema.parse(dataToValidate);
 
     const slugExists = await placeService.checkPlaceSlugExists(validatedData.slug, id);
     if (slugExists) return { error: 'Slug already exists. Please choose a unique slug.' };

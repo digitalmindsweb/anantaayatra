@@ -14,11 +14,15 @@ export async function createItineraryAction(prevState: any, formData: FormData) 
 
     const rawData = Object.fromEntries(formData.entries());
 
-    // Days are serialized as JSON by the client form
     const daysRaw = formData.get('days_json');
     const days: ItineraryDayWithPlaces[] = daysRaw ? JSON.parse(daysRaw as string) : [];
 
-    const validatedData = ItinerarySchema.parse({ ...rawData, days });
+    const dataToValidate = {
+      ...rawData,
+      days,
+      is_featured: rawData.is_featured === 'on',
+    };
+    const validatedData = ItinerarySchema.parse(dataToValidate);
 
     const slugExists = await itineraryService.checkItinerarySlugExists(validatedData.slug);
     if (slugExists) return { error: 'Slug already exists. Please choose a unique slug.' };
@@ -51,7 +55,12 @@ export async function updateItineraryAction(id: string, prevState: any, formData
     const daysRaw = formData.get('days_json');
     const days: ItineraryDayWithPlaces[] = daysRaw ? JSON.parse(daysRaw as string) : [];
 
-    const validatedData = ItinerarySchema.parse({ ...rawData, days });
+    const dataToValidate = {
+      ...rawData,
+      days,
+      is_featured: rawData.is_featured === 'on',
+    };
+    const validatedData = ItinerarySchema.parse(dataToValidate);
 
     const slugExists = await itineraryService.checkItinerarySlugExists(validatedData.slug, id);
     if (slugExists) return { error: 'Slug already exists. Please choose a unique slug.' };

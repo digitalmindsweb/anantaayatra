@@ -13,6 +13,7 @@ export const PlaceSchema = z.object({
   status: z.enum(['draft', 'published', 'archived']).default('draft'),
   meta_title: z.string().max(60).optional().nullable(),
   meta_description: z.string().max(160).optional().nullable(),
+  is_featured: z.boolean().default(false),
 });
 
 export type PlaceFormData = z.infer<typeof PlaceSchema>;

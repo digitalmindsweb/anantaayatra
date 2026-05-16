@@ -133,6 +133,18 @@ export function PlaceForm({ place }: PlaceFormProps) {
                   { label: 'Archived', value: 'archived' },
                 ]}
               />
+              <div className="mt-4 flex items-center">
+                <input 
+                  type="checkbox" 
+                  name="is_featured" 
+                  id="is_featured"
+                  defaultChecked={place?.is_featured}
+                  className="h-4 w-4 text-brand-600 focus:ring-brand-500 border-gray-300 rounded"
+                />
+                <label htmlFor="is_featured" className="ml-2 block text-sm text-slate-700 dark:text-slate-300">
+                  Featured Place
+                </label>
+              </div>
             </div>
 
             {/* Media */}

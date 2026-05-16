@@ -5,7 +5,7 @@ export default function Hero() {
   return (
     <div className="relative w-full h-[90vh] min-h-[600px] flex items-center justify-center overflow-hidden">
       {/* Background Image with Overlay */}
-      <div 
+      <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2021&auto=format&fit=crop')" }}
       >
@@ -28,15 +28,15 @@ export default function Hero() {
           Join us on a journey to the most breathtaking destinations. Expert travel guides, tips, and untamed adventures await.
         </p>
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
-          <Link 
-            href="/destinations" 
+          <Link
+            href="/places"
             className="group w-full sm:w-auto bg-brand-600 hover:bg-brand-500 text-white px-8 py-4 rounded-full font-medium transition-all shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2"
           >
             Start Exploring
             <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
           </Link>
-          <Link 
-            href="/blog" 
+          <Link
+            href="/blog"
             className="w-full sm:w-auto bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 text-white px-8 py-4 rounded-full font-medium transition-all hover:scale-105 flex items-center justify-center"
           >
             Read Travel Guides

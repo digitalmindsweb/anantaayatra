@@ -27,9 +27,9 @@ export default function Navbar() {
               Home
             </Link>
             <Link href="/blog" className="text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-500 font-medium transition-colors">
-              Blog
+              Travel Hub
             </Link>
-            <Link href="/destinations" className="text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-500 font-medium transition-colors">
+            <Link href="/places" className="text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-500 font-medium transition-colors">
               Destinations
             </Link>
             <button className="bg-brand-600 hover:bg-brand-500 text-white px-6 py-2.5 rounded-full font-medium transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">

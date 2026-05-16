@@ -19,7 +19,7 @@ export default async function FeaturedDestinations() {
             </p>
           </div>
 
-          <Link href="/destinations" className="hidden md:flex items-center text-brand-600 hover:text-brand-700 dark:text-brand-500 dark:hover:text-brand-400 font-semibold group mt-6 md:mt-0">
+          <Link href="/places" className="hidden md:flex items-center text-brand-600 hover:text-brand-700 dark:text-brand-500 dark:hover:text-brand-400 font-semibold group mt-6 md:mt-0">
             View all destinations
             <ArrowRight className="h-5 w-5 ml-2 transition-transform group-hover:translate-x-1" />
           </Link>

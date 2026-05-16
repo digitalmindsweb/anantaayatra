@@ -25,8 +25,8 @@ export default async function LatestBlogs() {
         </div>
 
         <div className="mt-16 text-center">
-          <Link 
-            href="/blog" 
+          <Link
+            href="/blog?type=blog"
             className="inline-flex items-center justify-center px-8 py-3.5 border border-slate-300 dark:border-slate-700 hover:border-brand-500 dark:hover:border-brand-500 text-slate-700 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 font-medium rounded-full transition-all hover:shadow-md"
           >
             Read All Articles
